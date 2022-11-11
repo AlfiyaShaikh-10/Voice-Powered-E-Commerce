@@ -1,4 +1,4 @@
-import React, { Fragment, createContext, useReducer, useEffect, useState, useCallback } from "react";
+import React, { Fragment, createContext, useReducer } from "react";
 import Layout from "../layout";
 import Slider from "./Slider";
 import ProductCategory from "./ProductCategory";
@@ -6,79 +6,67 @@ import { homeState, homeReducer } from "./HomeContext";
 import SingleProduct from "./SingleProduct";
 import alanBtn from '@alan-ai/alan-sdk-web';
 import { useHistory } from "react-router-dom";
-import { Route, Redirect } from "react-router-dom";
-import CartModal from "../partials/CartModal"
-// import Navber from "../partials/Navber"
+import { useEffect } from "react";
 
 export const HomeContext = createContext();
 
-
 const HomeComponent = () => {
+
   const history = useHistory();
 
-  const [category, setCategory] = useState([]);
-  // const openCart=useCallback(()=>{
-  //   alanInstance.playText("opening Cart")
-
-  // })
-  // useEffect(()=>{
-  // window.addEventListener(COMMANDS.OOPEN_CART,openCart)
-  // return ()=>{
-  //   window.removeEventListener(COMMANDS.OOPEN_CART,openCart)
-  // }
-  // },[opencart]
-  // )
   useEffect(() => {
-    alanBtn({
+    function sendCategory() {
+      alanBtnInstance.activate();
+      // Calling the project API method on button click
+      alanBtnInstance.callProjectApi("listCategories", {
+        categories: 'Electronics, Fashion, Home and Garden, Sports, Health and Beauty, Collectibles and Art Products',
+      }, function(error, result) {});
+    };
+    
+    var alanBtnInstance = alanBtn({
       key: 'd22e60a51299e6155cfe9d61365910e42e956eca572e1d8b807a3e2338fdd0dc/stage',
-      onCommand: ({ command, product }) => {
-        if (command === "showCart") {
-          CartModal.cartModalOpen()
-          // Navber.navberToggleOpen()
+      // key: '8a0d8107f8d57720e65cb7dbd8f921da2e956eca572e1d8b807a3e2338fdd0dc/stage',
+      onCommand: (commandData) => {
+        if (commandData.command === 'Cart') {
+          // Navber.cartModalOpen();
         }
-        if (command === "watches") {
-          history.push("/products/category/634873b2e323cf25f8812041")
-        }
-        if (command === "womenClothes") {
-          history.push("/products/category/634874d0e323cf25f8812045")
-        }
-        if (command === "shoes") {
-          history.push("/products/category/634875e8e323cf25f8812069")
-        }
-        if (command === "menClothes") {
-          history.push("/products/category/63487500e323cf25f8812049")
-        }
-
-        if (command === "Wishlist") {
+        else if (commandData.command === "Wishlist") {
           history.push("/wish-list");
         }
-        if (command === "adminPanel") {
+        else if (commandData.command === "UserProfile") {
+          history.push("/user/profile");
+        }
+        else if (commandData.command === "UserOrders") {
+          history.push("/user/orders");
+        }
+        else if (commandData.command === "SettingUser") {
+          history.push("/user/setting");
+        }
+        else if (commandData.command === "Home") {
+          history.push("/");
+        }
+        else if (commandData.command === "ContactUs") {
+          history.push("/contact-us");
+        }
+        else if (commandData.command === 'DashboardAdmin') {
           history.push("/admin/dashboard");
         }
-        if (command === "homePage") {
-          history.push("/localhost:3000/");
-
+        else if (commandData.command === 'Categories') {
+          history.push("/admin/dashboard/categories")
         }
-      },
+        else if (commandData.command === 'Products') {
+          history.push("/admin/dashboard/products")
+        }
+        else if (commandData.command === 'Orders') {
+          history.push("/admin/dashboard/orders")
+        }
+        else if(commandData.command === 'ListCategories') {
+          sendCategory();
+        }
+      }
     });
-    // filter("");
   }, [history]);
 
-  // const filter = (names) => {
-  //   const filtered = product.filter((item) => item.name.includes(names));
-  //   console.log(filtered);
-  //   setCategory(filtered);
-  // };
-  // useEffect(() => {
-  //   alanBtn({
-  //     key: 'd22e60a51299e6155cfe9d61365910e42e956eca572e1d8b807a3e2338fdd0dc/stage',
-  //     onCommand: (commandData) => {
-  //       if (commandData.command === 'go:back') {
-  //         // Call the client code that will react to the received command
-  //       }
-  //     }
-  //   });
-  // }, []);
   return (
     <Fragment>
       <Slider />
@@ -106,4 +94,3 @@ const Home = (props) => {
 };
 
 export default Home;
-// import { productByCategory } from "../../admin/products/FetchApi";
